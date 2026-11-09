@@ -190,13 +190,19 @@ async fn check_one(shared: &Shared, name: &str) -> Result<()> {
             .apply_decision(name, &decision, now, next_check_at, &shared.channels)?;
     if !applied {
         tracing::info!("{name}: kontrol sırasında listeden silindi");
-    } else if decision.state != previous.state {
+        return Ok(());
+    }
+    if decision.state != previous.state {
         tracing::info!("{name}: {} -> {}", previous.state, decision.state);
     } else {
         tracing::debug!("{name}: durum değişmedi ({})", decision.state);
     }
     for event in &decision.events {
-        tracing::info!("{name}: olay kuyruğa alındı: {event:?}");
+        if shared.channels.is_empty() {
+            tracing::info!("{name}: olay (bildirim kanalı yok, kuyruğa alınmadı): {event:?}");
+        } else {
+            tracing::info!("{name}: olay kuyruğa alındı: {event:?}");
+        }
     }
     Ok(())
 }
