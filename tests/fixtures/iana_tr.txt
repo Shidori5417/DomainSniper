@@ -1,0 +1,50 @@
+% IANA WHOIS server
+% for more information on IANA, visit http://www.iana.org
+% This query returned 1 object
+
+domain:       TR
+
+organisation: Bilgi Teknolojileri ve İletişim Kurumu (BTK)
+address:      Eskisehir Yolu 10.Km No:276 Çankaya
+address:      Ankara 06530
+address:      Türkiye
+
+contact:      administrative
+name:         Vice President
+organisation: Bilgi Teknolojileri ve İletişim Kurumu
+address:      Eskisehir Yolu 10.Km No:276 Çankaya
+address:      Ankara 06530
+address:      Türkiye
+phone:        +90 (312) 412 13 61
+fax-no:       +90 (312) 412 20 80
+e-mail:       mustafa.karaman@btk.gov.tr
+
+contact:      technical
+name:         Engineer
+organisation: Bilgi Teknolojileri ve İletişim Kurumu
+address:      Eskisehir Yolu 10.Km No:276 Çankaya
+address:      Ankara 06530
+address:      Türkiye
+phone:        +90 (312) 412 14 21
+fax-no:       +90 (312) 412 20 80
+e-mail:       oguzhan.lacin@btk.gov.tr
+
+nserver:      NS43.NS.TR 185.7.0.4 2001:a98:13:0:0:0:0:43
+nserver:      NS44.NS.TR 185.7.0.5 2001:a98:13:0:0:0:0:44
+nserver:      NS61.NS.TR 206.51.254.1 2620:171:804:ad2:0:0:0:1
+nserver:      NS71.NS.TR 185.67.32.53
+nserver:      NS72.NS.TR 2603:1020:201:10:0:0:0:111 40.68.114.66
+nserver:      NS73.NS.TR 31.145.253.159
+nserver:      NS74.NS.TR 31.145.253.160
+nserver:      NS75.NS.TR 88.255.61.201
+ds-rdata:     46909 13 2 0f3b2140ad01674a7e17dd0dc3156b53ff9d52946a410ebb2639ecc86236de23
+
+whois:        whois.trabis.gov.tr
+
+status:       ACTIVE
+remarks:      Registration information: http://www.trabis.gov.tr
+
+created:      1990-09-17
+changed:      2026-07-05
+source:       IANA
+

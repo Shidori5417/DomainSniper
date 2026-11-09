@@ -1,0 +1,37 @@
+** Domain Name: metu.edu.tr
+Domain Status: Active
+Frozen Status: -
+Transfer Status: The domain is LOCKED to transfer.
+
+** Registrant:
+Orta Doğu Teknik Üniversitesi
+Hidden upon user request
+Hidden upon user request
+Hidden upon user request
+Hidden upon user request
+
+
+** Registrar:
+NIC Handle		: tk1036
+Organization Name	: TRABİS KK
+Address			: ANKARA
+			  ANKARA
+			  00000 Ankara Türkiye
+Phone			: 90-312-2100060
+Fax			: 90-312-2100060 
+
+
+** Domain Servers:
+ns1.metu.edu.tr 144.122.144.171 2001:a98:30:cc::4:ad01
+ns2.metu.edu.tr 144.122.144.170 2001:a98:30:cc::4:ad02
+
+
+** Additional Info:
+Created on..............: 2003-Mar-11.
+Expires on..............: 2027-Mar-10.
+
+
+** Whois Server:
+Last Update Time: 2026-11-09T00:46:47+03:00
+
+

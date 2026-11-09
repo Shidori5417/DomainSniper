@@ -1,0 +1,67 @@
+# DomainGözcü örnek yapılandırma
+# Kopyala: cp config.example.toml /etc/domain-gozcu/config.toml
+
+[genel]
+veritabani = "/var/lib/domain-gozcu/gozcu.db"
+log_seviyesi = "info"            # trace | debug | info | warn | error
+eszamanli_kontrol = 8            # aynı anda en fazla kaç domain kontrol edilsin
+sunucu_istek_per_sn = 1          # her RDAP/WHOIS sunucusuna saniyede en fazla kaç istek
+http_timeout_sn = 10
+kullanici_ajani = "DomainGozcu/1.0 (+kişisel izleme aracı)"
+
+[zamanlama]
+# Durum bazlı kontrol aralıkları (dakika)
+aktif = 1440
+park_satilik = 1440
+bitis_yakin = 720
+suresi_doldu = 360
+redemption = 60
+pending_delete = 10
+bosta = 360
+askida = 360
+bilinmiyor = 30
+jitter_yuzde = 10                # aralıklara ±%10 rastgelelik
+bosta_dogrulama_dk = 2           # "boşta" ikinci teyit bekleme süresi
+
+[uyarilar]
+bitis_esikleri_gun = [30, 7, 1]
+pending_delete_gun = 5           # düşme tahmini için (uzantıya göre aşağıda ezilebilir)
+ardisik_hata_uyarisi = 5         # bu kadar arka arkaya hata olursa bir kez bildir
+gunluk_ozet = true
+gunluk_ozet_saat = "09:00"       # sunucu saat dilimi
+saat_dilimi = "Europe/Istanbul"
+
+[uyarilar.uzanti_pending_delete_gun]
+# "org" = 5
+
+[bildirim.discord]
+aktif = true
+# Gizli bilgi: tercihen DOMAIN_GOZCU_DISCORD_WEBHOOK ortam değişkeniyle verin (systemd EnvironmentFile).
+webhook_url = ""
+bosta_mention = "@everyone"      # boş bırakılırsa mention yok; rol için "<@&ROL_ID>"
+
+[bildirim.telegram]
+aktif = true
+# Gizli bilgi: tercihen DOMAIN_GOZCU_TELEGRAM_TOKEN ortam değişkeniyle verin (systemd EnvironmentFile).
+bot_token = ""
+chat_id = "123456789"
+
+[tespit]
+park_ns = [
+  "sedoparking.com", "dan.com", "afternic.com", "bodis.com",
+  "parkingcrew.net", "above.com", "parklogic.com", "domainmarket.com",
+]
+market_alanlari = ["dan.com", "sedo.com", "afternic.com", "atom.com", "hugedomains.com"]
+satilik_ifadeleri = [
+  "this domain is for sale", "domain is for sale", "buy this domain", "make an offer",
+  "bu alan adı satılıktır", "bu domain satılık", "alan adı satılık",
+]
+whois_bulunamadi_ifadeleri = [
+  "no match", "not found", "no data found", "is available", "no entries found",
+]
+
+# Başlangıç listesi (opsiyonel; CLI'daki `add` ile de eklenebilir)
+[[domain]]
+ad = "ornek.com"
+not = "Düşerse haber ver"
+etiket = ["hedef"]

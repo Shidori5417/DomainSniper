@@ -1,0 +1,53 @@
+[Unit]
+Description=DomainGozcu - domain status monitoring daemon (monitor and notify only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/domain-gozcu -c /etc/domain-gozcu/config.toml run
+
+# Static system user (create it first: see README). Chosen over DynamicUser so that the
+# CLI (add/remove/list/...) can be run as the same user and share the SQLite DB.
+User=domain-gozcu
+Group=domain-gozcu
+
+# /var/lib/domain-gozcu (DB, WAL files, rdap-dns.json bootstrap cache) and /etc/domain-gozcu
+StateDirectory=domain-gozcu
+StateDirectoryMode=0750
+ConfigurationDirectory=domain-gozcu
+# Secrets (webhook / bot token); read by systemd as root, so mode 0600 root:root is enough.
+EnvironmentFile=-/etc/domain-gozcu/domain-gozcu.env
+
+Restart=always
+RestartSec=10
+# Daemon drains in-flight work for up to 30 s on SIGTERM.
+KillSignal=SIGTERM
+TimeoutStopSec=45
+
+# Sandboxing
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
