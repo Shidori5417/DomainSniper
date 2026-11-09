@@ -2,6 +2,10 @@
 
 7/24 çalışan, tek binary'lik bir **domain durum izleme** servisi. İzlediğin domainlerin kayıt durumunu (aktif, süresi dolmuş, redemption, pendingDelete, boşta, satılık...) periyodik olarak kontrol eder ve durum değişince **Discord** ve/veya **Telegram**'a bildirim gönderir.
 
+![İzlenen domainler](docs/screenshots/list.png)
+
+> Ekran görüntüleri gerçek çıktılardır: demo bir veritabanında 7 domain ile çalıştırıldı (Kasım 2026). `gozcu-demo-7731-qx.com` kayıtsız bir test adıdır; `hugedomains.com` bir domain pazarının kendi sitesi olduğu için `ParkSatilik` görünür.
+
 ## Ne yapar, ne yapmaz
 
 - Yapar: DNS / RDAP / WHOIS ile durum tespiti, değişiklikte bildirim, bitiş tarihi uyarıları, günlük özet, durum geçmişi.
@@ -16,6 +20,18 @@ Kontrol sırası: **DNS (NS) → RDAP → WHOIS (RDAP yoksa) → park/satılık 
 - Durum RDAP/WHOIS **status kodlarından** çıkarılır; tarih tahminine dayanılmaz (tek istisna: pendingDelete düşme tarihi tahminidir).
 - **"Boşta" çift doğrulamalıdır:** ilk "kayıt yok" sonucunda bildirim atılmaz, `bosta_dogrulama_dk` (varsayılan 2 dk) sonra tekrar bakılır; ikinci kontrol de aynıysa ve NS yoksa "boşta" olur ve bildirim gider.
 - **Geçici hatalar (429, 5xx, timeout, ağ hatası) durumu asla değiştirmez.** Sadece backoff uygulanır; `ardisik_hata_uyarisi` kadar arka arkaya hata olursa bir kez "kontrol edilemiyor" bildirimi gider.
+
+`check` komutu bu akışı tek bir domain için çalıştırır ve durum makinesinin vereceği kararı gösterir (veritabanına yazmaz, bildirim atmaz):
+
+![check çıktısı](docs/screenshots/check.png)
+
+Servis çalışırken durum geçişleri loglanır. Aşağıdaki çalıştırmada kayıtsız domain ilk kontrolde değil, ~1 dk sonraki ikinci teyitte `Bosta` olmuştur; `şeker.com.tr`'deki (logda punycode: `xn--eker-45a.com.tr`) DNS zaman aşımı ise geçici hata olarak geçilmiş, durumu bozmamıştır:
+
+![Servis logu](docs/screenshots/run.png)
+
+Her geçiş geçmişe yazılır:
+
+![Durum geçmişi](docs/screenshots/history.png)
 
 Ayrıntılı kurallar: `docs/TESPIT_KURALLARI.md`, mimari: `docs/MIMARI.md`.
 
@@ -117,6 +133,8 @@ sudo -u domain-gozcu domain-gozcu list
 ```bash
 sudo sh -c 'set -a; . /etc/domain-gozcu/domain-gozcu.env; exec domain-gozcu test-notify'
 ```
+
+![Komut listesi](docs/screenshots/help.png)
 
 ### Komutlar
 
