@@ -244,3 +244,7 @@ etiket = ["hedef"]
 - `Retry-After` başlığının HTTP-date biçimi desteklenmez; yalnızca saniye değeri okunur.
 - pendingDelete düşme tarihi bir **tahmindir** (`pending_delete_gun`); registry'nin gerçek silme anı farklı olabilir.
 - RDAP/WHOIS sunucuları hız sınırlar; `sunucu_istek_per_sn` varsayılanı (1) bilerek düşüktür.
+
+## Lisans
+
+[MIT](LICENSE)
