@@ -95,11 +95,11 @@ impl Rdap {
             return Ok(None);
         };
         let url = format!("{base}domain/{domain}");
-        let lookup = retry(|| self.query(&url)).await?;
+        let lookup = retry(|| self.query(domain, &url)).await?;
         Ok(Some((url, lookup)))
     }
 
-    async fn query(&self, url: &str) -> Result<Lookup, Failure> {
+    async fn query(&self, domain: &str, url: &str) -> Result<Lookup, Failure> {
         self.limiter.until_ready(&host_of(url)).await;
         let response = self
             .http
@@ -112,7 +112,7 @@ impl Rdap {
         match status {
             StatusCode::OK => {
                 let body = response.text().await.map_err(transient)?;
-                Ok(Lookup::Registered(parse_rdap(&body)?))
+                Ok(Lookup::Registered(parse_rdap_for(Some(domain), &body)?))
             }
             StatusCode::NOT_FOUND => Ok(Lookup::NotFound),
             s if s == StatusCode::TOO_MANY_REQUESTS || s.is_server_error() => Err(Failure {
@@ -264,10 +264,47 @@ fn registrar(entities: &[Value]) -> Option<String> {
         .map(str::to_owned)
 }
 
-/// Parses an RDAP domain object.
-pub fn parse_rdap(json: &str) -> Result<Registration, CheckError> {
+/// Parses an RDAP domain object without checking the queried name (tests).
+#[cfg(test)]
+fn parse_rdap(json: &str) -> Result<Registration, CheckError> {
+    parse_rdap_for(None, json)
+}
+
+/// Parses an RDAP response for `expected` (when given).
+///
+/// A syntactically valid JSON document is not enough: it must be a domain object
+/// (`objectClassName`, when present, is `domain`) and carry a non-empty `ldhName`
+/// matching the queried domain. This stops error documents, HTML-ish JSON blobs and
+/// responses for another domain from being treated as a successful registration.
+pub fn parse_rdap_for(expected: Option<&str>, json: &str) -> Result<Registration, CheckError> {
     let doc: Value = serde_json::from_str(json)
         .map_err(|e| CheckError::Permanent(format!("RDAP yanıtı geçersiz JSON: {e}")))?;
+    if !doc.is_object() {
+        return Err(CheckError::Permanent(
+            "RDAP yanıtı bir JSON nesnesi değil".into(),
+        ));
+    }
+    if let Some(class) = doc.get("objectClassName").and_then(Value::as_str) {
+        if !class.eq_ignore_ascii_case("domain") {
+            return Err(CheckError::Permanent(format!(
+                "RDAP yanıtı domain nesnesi değil (objectClassName: {class})"
+            )));
+        }
+    }
+    let ldh_name = doc
+        .get("ldhName")
+        .and_then(Value::as_str)
+        .map(clean_host)
+        .filter(|n| !n.is_empty())
+        .ok_or_else(|| CheckError::Permanent("RDAP yanıtında domain adı (ldhName) yok".into()))?;
+    if let Some(expected) = expected {
+        if ldh_name != clean_host(expected) {
+            return Err(CheckError::Permanent(format!(
+                "RDAP yanıtı sorgulanan domain için değil: {ldh_name}"
+            )));
+        }
+    }
+
     let list = |key: &str| {
         doc[key]
             .as_array()
@@ -351,18 +388,44 @@ mod tests {
 
     #[test]
     fn registrar_falls_back_to_handle() {
-        let json = r#"{"entities":[{"handle":"292","roles":["registrar"],
+        let json = r#"{"objectClassName":"domain","ldhName":"example.com",
+            "entities":[{"handle":"292","roles":["registrar"],
             "vcardArray":["vcard",[["fn",{},"text",""]]]}]}"#;
         assert_eq!(parse_rdap(json).unwrap().registrar.as_deref(), Some("292"));
     }
 
     #[test]
-    fn minimal_object_and_garbage() {
-        assert_eq!(parse_rdap("{}").unwrap(), Registration::default());
+    fn minimal_domain_object_is_accepted() {
+        let reg = parse_rdap(r#"{"objectClassName":"domain","ldhName":"Example.COM."}"#).unwrap();
+        assert_eq!(reg, Registration::default());
+    }
+
+    #[test]
+    fn valid_json_without_domain_data_is_rejected() {
+        for bad in [
+            "{}",
+            "[]",
+            "null",
+            r#"{"errorCode":404,"title":"not found"}"#,
+            r#"{"objectClassName":"entity","handle":"XYZ"}"#,
+            r#"{"objectClassName":"domain","ldhName":""}"#,
+        ] {
+            assert!(
+                matches!(parse_rdap(bad), Err(CheckError::Permanent(_))),
+                "{bad} geçerli RDAP kaydı sayılmamalı"
+            );
+        }
         assert!(matches!(
             parse_rdap("<html>"),
             Err(CheckError::Permanent(_))
         ));
+    }
+
+    #[test]
+    fn response_for_another_domain_is_rejected() {
+        let json = r#"{"objectClassName":"domain","ldhName":"other.com"}"#;
+        assert!(parse_rdap_for(Some("example.com"), json).is_err());
+        assert!(parse_rdap_for(Some("EXAMPLE.com"), json).is_err());
     }
 
     #[test]
