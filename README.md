@@ -1,5 +1,8 @@
 # DomainGözcü
 
+[![CI](https://github.com/Shidori5417/DomainSniper/actions/workflows/ci.yml/badge.svg)](https://github.com/Shidori5417/DomainSniper/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 7/24 çalışan, tek binary'lik domain izleme servisi. İzlediğin domainlerin kayıt durumunu (aktif, süresi dolmuş, redemption, pendingDelete, boşta, satılık...) periyodik kontrol eder ve değişince **Discord** ve/veya **Telegram**'a bildirim gönderir.
 
 ![İzlenen domainler](docs/screenshots/list.png)
@@ -47,6 +50,7 @@ Aralıklara `jitter_yuzde` (varsayılan ±%10) rastgelelik eklenir. Zamanlayıc�
 ## Derleme ve test
 
 ```bash
+cargo install --git https://github.com/Shidori5417/DomainSniper   # ~/.cargo/bin/domain-gozcu
 cargo build --release    # target/release/domain-gozcu
 cargo test               # 130 test; RDAP/WHOIS fixture'ları tests/fixtures/ altında
 ```
