@@ -1,1 +1,10 @@
 /target
+config.toml
+*.env
+.env*
+*.db
+*.db-wal
+*.db-shm
+rdap-dns.json
+*.log
+.DS_Store
