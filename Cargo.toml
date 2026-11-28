@@ -3,6 +3,9 @@ name = "domain-gozcu"
 version = "0.1.0"
 license = "MIT"
 edition = "2021"
+description = "7/24 çalışan, tek binary'lik domain izleme servisi (DNS, RDAP, WHOIS)"
+repository = "https://github.com/Shidori5417/DomainSniper"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.104"

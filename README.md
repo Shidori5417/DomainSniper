@@ -5,6 +5,8 @@
 
 7/24 çalışan, tek binary'lik domain izleme servisi. İzlediğin domainlerin kayıt durumunu (aktif, süresi dolmuş, redemption, pendingDelete, boşta, satılık...) periyodik kontrol eder ve değişince **Discord** ve/veya **Telegram**'a bildirim gönderir.
 
+> **Adlandırma notu:** Bu GitHub deposunun adı `DomainSniper` olsa da Cargo paketi, kurulan CLI/servis binary'si ve systemd birimi `domain-gozcu` adındadır (`cargo install --git https://github.com/Shidori5417/DomainSniper` komutu `~/.cargo/bin/domain-gozcu` dosyasını kurar).
+
 ![İzlenen domainler](docs/screenshots/list.png)
 
 *Ekran görüntüleri gerçek çıktılardır: 7 domainlik bir demo veritabanıyla alındı. `gozcu-demo-7731-qx.com` kayıtsız bir test adıdır; `hugedomains.com` bir pazar yeri sitesi olduğu için `ParkSatilik` görünür.*
@@ -29,7 +31,11 @@ Tek bir domain için karar akışını görmek için `check` kullanılır (verit
 
 ![check çıktısı](docs/screenshots/check.png)
 
-Ayrıntılar: `docs/TESPIT_KURALLARI.md`, mimari: `docs/MIMARI.md`.
+Bir domainin durum geçiş geçmişini görmek için `history` kullanılır:
+
+![history çıktısı](docs/screenshots/history.png)
+
+Ayrıntılar: [docs/TESPIT_KURALLARI.md](docs/TESPIT_KURALLARI.md), mimari: [docs/MIMARI.md](docs/MIMARI.md).
 
 ## Durumlar ve varsayılan kontrol aralıkları
 
